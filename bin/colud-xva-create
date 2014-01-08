@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -eu
+
+PRIMARY_DISK_SIZE=8
+ROOT_PARTITION_SIZE_GB=6
+RAM_GB=4
+HOSTNAME=devstack
+
+THISDIR=$(dirname $(readlink -f $0))
+CONFIGDIR=$(cd $THISDIR && cd .. && cd config && pwd)
+LIBDIR=$(cd $THISDIR && cd .. && cd lib && pwd)
+
+WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-start)
+HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
+
+cat $LIBDIR/install_ubuntu_on_xvdb.sh |
+    bash $LIBDIR/remote_bash.sh "ubuntu@$WORKER_IP" \
+    "$HOSTNAME" \
+    "$ROOT_PARTITION_SIZE_GB"
+
+WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-detach-second-hdd
+
+NEW_VM=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-vm-from-hdd $HDD $RAM_GB $HOSTNAME)
+
+WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
+
+WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
