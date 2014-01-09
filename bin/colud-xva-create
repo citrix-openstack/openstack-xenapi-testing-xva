@@ -15,7 +15,7 @@ WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-start)
 HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
 
 cat $LIBDIR/install_ubuntu_on_xvdb.sh |
-    bash $LIBDIR/remote_bash.sh "ubuntu@$WORKER_IP" \
+    remote-bash "ubuntu@$WORKER_IP" \
     "$HOSTNAME" \
     "$ROOT_PARTITION_SIZE_GB"
 
