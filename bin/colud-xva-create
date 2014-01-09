@@ -26,3 +26,5 @@ NEW_VM=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-vm-from-hdd $HDD $R
 WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
 
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
+
+WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-delete
