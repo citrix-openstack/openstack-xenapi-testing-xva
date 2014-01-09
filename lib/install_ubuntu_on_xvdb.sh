@@ -65,7 +65,7 @@ function install_base_system() {
              --arch=amd64 \
              --components=main,universe \
              --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget \
-             precise \
+             saucy \
              /ubuntu_chroot \
              http://mirror.anl.gov/pub/ubuntu/
         echo "Saving cache..."
