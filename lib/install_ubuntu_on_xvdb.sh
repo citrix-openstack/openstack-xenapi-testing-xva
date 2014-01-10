@@ -8,7 +8,7 @@ function main() {
     prepare_disk
     install_base_system
     enable_chroot
-    customize_system || { disable_chroot; exit 1; }
+    customize_system
     disable_chroot
 }
 
@@ -17,11 +17,10 @@ function prepare_disk() {
     export DEBIAN_FRONTEND=noninteractive
 
     sudo apt-get update
-    sudo apt-get -qy upgrade
+    #sudo apt-get -qy upgrade
 
     # Partition xvdb
-    {
-    cat << EOF
+    sudo fdisk /dev/xvdb << EOF
 o
 n
 p
@@ -40,13 +39,22 @@ t
 82
 wq
 EOF
-    } | sudo fdisk /dev/xvdb
 
     sudo partprobe /dev/xvdb
 
     sudo mkfs.ext3 /dev/xvdb1
     sudo mkswap /dev/xvdb2
-    sync
+    sudo sync
+}
+
+function unmount_ubuntu() {
+    sudo sync
+
+    sudo umount "/mnt/ubuntu"
+
+    while grep -q "/mnt/ubuntu" /proc/mounts; do
+        sleep 1
+    done
 }
 
 function install_base_system() {
@@ -59,7 +67,6 @@ function install_base_system() {
     JEOS_CACHE="/var/jeos/cache.tgz"
 
     if ! [ -e "$JEOS_CACHE" ]; then
-        sudo rm -rf /ubuntu_chroot
         sudo mkdir -p /ubuntu_chroot
         sudo http_proxy=http://gold.eng.hq.xensource.com:8000 debootstrap \
              --arch=amd64 \
@@ -67,29 +74,23 @@ function install_base_system() {
              --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget \
              saucy \
              /ubuntu_chroot \
-             http://mirror.anl.gov/pub/ubuntu/
+             http://mirror.anl.gov/pub/ubuntu/ > /dev/null 2> /dev/null < /dev/null
         echo "Saving cache..."
         sudo tar -czf "$JEOS_CACHE" -C /ubuntu_chroot ./
+        sudo rm -rf /ubuntu_chroot
     fi
 
     sudo tar -xzf "$JEOS_CACHE" -C /mnt/ubuntu
 
-    # Unmount
-    while mount | grep "/mnt/ubuntu";
-    do
-        sudo umount /mnt/ubuntu | true
-        sleep 1
-    done
+    unmount_ubuntu
 }
 
 function customize_system() {
-    {
-        cat << EOF
+    sudo tee /mnt/ubuntu/etc/fstab << EOF
 proc /proc proc nodev,noexec,nosuid 0 0
 UUID=$(sudo blkid -s UUID /dev/xvdb1 -o value) /    ext3 errors=remount-ro 0 1
 UUID=$(sudo blkid -s UUID /dev/xvdb2 -o value) none swap sw                0 0
 EOF
-    } | sudo tee /mnt/ubuntu/etc/fstab || true 
 
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "grub-install /dev/xvdb"
@@ -131,8 +132,7 @@ respawn
 exec /sbin/getty -L hvc0 9600 linux
 EOF
 
-    {
-        cat << EOF
+    sudo tee /mnt/ubuntu/root/update_authorized_keys.sh << EOF
 #!/bin/bash
 set -eux
 
@@ -141,15 +141,11 @@ xenstore-exists /local/domain/\$DOMID/authorized_keys/root
 xenstore-read /local/domain/\$DOMID/authorized_keys/root > /root/xenstore_value
 cat /root/xenstore_value > /root/.ssh/authorized_keys
 EOF
-    } | sudo tee /mnt/ubuntu/root/update_authorized_keys.sh
     sudo chmod +x /mnt/ubuntu/root/update_authorized_keys.sh
 
-    {
-        cat << EOF
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "crontab -" << EOF
 * * * * * /root/update_authorized_keys.sh
 EOF
-    } | sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
-        "crontab -"
 
     # Set hostname
     echo "$HOSTNAME" | sudo tee /mnt/ubuntu/etc/hostname
@@ -160,21 +156,17 @@ EOF
     # Disable DNS with ssh
     echo "UseDNS no" | sudo tee /mnt/ubuntu/etc/ssh/sshd_config
 
-    {
-        cat << EOF
+    sudo tee /mnt/ubuntu/etc/network/interfaces << EOF
 auto lo
 iface lo inet loopback
 auto eth0
 iface eth0 inet dhcp
 EOF
-    } | sudo tee /mnt/ubuntu/etc/network/interfaces
 
-    {
-        cat << EOF
+    sudo tee /mnt/ubuntu/etc/apt/sources.list << EOF
 deb http://archive.ubuntu.com/ubuntu precise main
 deb http://archive.ubuntu.com/ubuntu precise universe
 EOF
-    } | sudo tee /mnt/ubuntu/etc/apt/sources.list
 }
 
 function enable_chroot() {
@@ -196,12 +188,7 @@ function disable_chroot() {
     sudo umount /mnt/ubuntu/dev/pts
     sudo umount /mnt/ubuntu/dev
 
-    # Unmount
-    while mount | grep "/mnt/ubuntu";
-    do
-        sudo umount /mnt/ubuntu | true
-        sleep 1
-    done
+    unmount_ubuntu
 }
 
 main

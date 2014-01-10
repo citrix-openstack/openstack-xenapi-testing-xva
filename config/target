@@ -1,5 +1,4 @@
 WORKER_VM_NAME="slave"
 WORKER_VM_NETWORKING="0=xenbr0"
-WORKER_VM_XVA="nfs:copper.eng.hq.xensource.com:/exported-vms/slave2.xva"
+WORKER_VM_XVA="ssh:$PublicHttpServerUserAndHost:$PublicHttpServerOpenStackPath/openstack-xenapi-testing-appliance.xva"
 WORKER_VM_XENSERVER="happywerld3.eng.hq.xensource.com"
-

@@ -11,7 +11,14 @@ THISDIR=$(dirname $(readlink -f $0))
 CONFIGDIR=$(cd $THISDIR && cd .. && cd config && pwd)
 LIBDIR=$(cd $THISDIR && cd .. && cd lib && pwd)
 
-WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-start)
+
+WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-get)
+
+if [ -z "$WORKER_IP" ]; then
+    WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
+fi
+
+echo "Worker: $WORKER_IP"
 HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
 
 cat $LIBDIR/install_ubuntu_on_xvdb.sh |
@@ -28,3 +35,5 @@ WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
 
 WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-delete
+
+WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-delete-vm $NEW_VM
