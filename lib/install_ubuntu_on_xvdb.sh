@@ -79,7 +79,7 @@ function install_base_system() {
              --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget \
              saucy \
              /ubuntu_chroot \
-             http://mirror.anl.gov/pub/ubuntu/ > /dev/null 2> /dev/null < /dev/null
+             http://mirror.pnl.gov/ubuntu/ > /dev/null 2> /dev/null < /dev/null
         echo "Saving cache..."
         sudo tar -czf "$JEOS_CACHE" -C /ubuntu_chroot ./
         sudo rm -rf /ubuntu_chroot
