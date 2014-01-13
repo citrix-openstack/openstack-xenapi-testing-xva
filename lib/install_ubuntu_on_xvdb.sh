@@ -5,11 +5,16 @@ HOSTNAME="$1"
 ROOT_PARTITION_SIZE_GB="$2"
 
 function main() {
+    set_mirror
     prepare_disk
     install_base_system
     enable_chroot
     customize_system
     disable_chroot
+}
+
+function set_mirror() {
+    sudo sed -ie "s,mirror.anl.gov/pub/ubuntu,mirror.pnl.gov/ubuntu,g" /etc/apt/sources.list
 }
 
 function prepare_disk() {
