@@ -169,8 +169,35 @@ iface eth0 inet dhcp
 EOF
 
     sudo tee /mnt/ubuntu/etc/apt/sources.list << EOF
-deb http://archive.ubuntu.com/ubuntu precise main
-deb http://archive.ubuntu.com/ubuntu precise universe
+deb http://mirror.rackspace.com/ubuntu/ saucy main restricted
+deb-src http://mirror.rackspace.com/ubuntu/ saucy main restricted
+
+deb http://mirror.rackspace.com/ubuntu/ saucy-updates main restricted
+deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates main restricted
+
+deb http://mirror.rackspace.com/ubuntu/ saucy universe
+deb-src http://mirror.rackspace.com/ubuntu/ saucy universe
+
+deb http://mirror.rackspace.com/ubuntu/ saucy-updates universe
+deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates universe
+
+deb http://mirror.rackspace.com/ubuntu/ saucy multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ saucy multiverse
+
+deb http://mirror.rackspace.com/ubuntu/ saucy-updates multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates multiverse
+
+deb http://mirror.rackspace.com/ubuntu/ saucy-backports main restricted universe multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ saucy-backports main restricted universe multiverse
+
+deb http://security.ubuntu.com/ubuntu saucy-security main restricted
+deb-src http://security.ubuntu.com/ubuntu saucy-security main restricted
+
+deb http://security.ubuntu.com/ubuntu saucy-security universe
+deb-src http://security.ubuntu.com/ubuntu saucy-security universe
+
+deb http://security.ubuntu.com/ubuntu saucy-security multiverse
+deb-src http://security.ubuntu.com/ubuntu saucy-security multiverse
 EOF
 }
 
