@@ -3,6 +3,7 @@ set -eux
 
 HOSTNAME="$1"
 ROOT_PARTITION_SIZE_GB="$2"
+USERNAME="domzero"
 
 function main() {
     set_mirror
@@ -137,20 +138,6 @@ respawn
 exec /sbin/getty -L hvc0 9600 linux
 EOF
 
-    sudo tee /mnt/ubuntu/root/update_authorized_keys.sh << EOF
-#!/bin/bash
-set -eux
-
-DOMID=\$(xenstore-read domid)
-xenstore-exists /local/domain/\$DOMID/authorized_keys/root
-xenstore-read /local/domain/\$DOMID/authorized_keys/root > /root/xenstore_value
-cat /root/xenstore_value > /root/.ssh/authorized_keys
-EOF
-    sudo chmod +x /mnt/ubuntu/root/update_authorized_keys.sh
-
-    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "crontab -" << EOF
-* * * * * /root/update_authorized_keys.sh
-EOF
 
     # Set hostname
     echo "$HOSTNAME" | sudo tee /mnt/ubuntu/etc/hostname
@@ -199,6 +186,38 @@ deb-src http://security.ubuntu.com/ubuntu saucy-security universe
 deb http://security.ubuntu.com/ubuntu saucy-security multiverse
 deb-src http://security.ubuntu.com/ubuntu saucy-security multiverse
 EOF
+
+    # Add a user
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "DEBIAN_FRONTEND=noninteractive \
+        adduser --disabled-password --quiet $USERNAME --gecos $USERNAME"
+
+    # Add a script to update authorized keys
+    sudo tee /mnt/ubuntu/$USERNAME/update_authorized_keys.sh << EOF
+#!/bin/bash
+set -eux
+
+DOMID=\$(xenstore-read domid)
+xenstore-exists /local/domain/\$DOMID/authorized_keys/$USERNAME
+xenstore-read /local/domain/\$DOMID/authorized_keys/$USERNAME > /home/$USERNAME/xenstore_value
+mkdir -p /home/$USERNAME/.ssh
+cat /home/$USERNAME/xenstore_value > /home/$USERNAME/.ssh/authorized_keys
+EOF
+
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "chown $USERNAME:$USERNAME /home/$USERNAME/update_authorized_keys.sh; \
+        chmod +x /home/$USERNAME/update_authorized_keys.sh"
+
+    sudo tee /mnt/ubuntu/etc/sudoers.d/allow_$USERNAME << EOF
+$USERNAME ALL = NOPASSWD: ALL
+EOF
+
+    sudo chmod 0440 /mnt/ubuntu/etc/sudoers.d/allow_$USERNAME
+
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "crontab -u $USERNAME -" << EOF
+* * * * * /home/$USERNAME/update_authorized_keys.sh
+EOF
+
 }
 
 function enable_chroot() {
