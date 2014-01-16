@@ -197,12 +197,10 @@ EOF
 #!/bin/bash
 set -eux
 
-DOMID=\$(xenstore-read domid)
-xenstore-exists /local/domain/\$DOMID/authorized_keys/$USERNAME
-xenstore-read /local/domain/\$DOMID/authorized_keys/$USERNAME > /home/$USERNAME/xenstore_value
-chmod 0700 /home/$USERNAME/.ssh
+DOMID=\$(sudo xenstore-read domid)
+sudo xenstore-exists /local/domain/\$DOMID/authorized_keys/$USERNAME
+sudo xenstore-read /local/domain/\$DOMID/authorized_keys/$USERNAME > /home/$USERNAME/xenstore_value
 cat /home/$USERNAME/xenstore_value > /home/$USERNAME/.ssh/authorized_keys
-chmod 0600 /home/$USERNAME/.ssh/authorized_keys
 EOF
 
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
