@@ -110,7 +110,7 @@ EOF
     sudo mkdir -p /mnt/ubuntu/root/.ssh
     sudo chmod 0700 /mnt/ubuntu/root/.ssh
     sudo tee /mnt/ubuntu/root/.ssh/authorized_keys << EOF
-# Empty now, will be populated by /root/update_authorized_keys.sh
+# Empty now, should be populated by $USERNAME
 EOF
     sudo chmod 0600 /mnt/ubuntu/root/.ssh/authorized_keys
 
@@ -200,13 +200,21 @@ set -eux
 DOMID=\$(xenstore-read domid)
 xenstore-exists /local/domain/\$DOMID/authorized_keys/$USERNAME
 xenstore-read /local/domain/\$DOMID/authorized_keys/$USERNAME > /home/$USERNAME/xenstore_value
-mkdir -p /home/$USERNAME/.ssh
+chmod 0700 /home/$USERNAME/.ssh
 cat /home/$USERNAME/xenstore_value > /home/$USERNAME/.ssh/authorized_keys
+chmod 0600 /home/$USERNAME/.ssh/authorized_keys
 EOF
 
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
-        "chown $USERNAME:$USERNAME /home/$USERNAME/update_authorized_keys.sh; \
-        chmod +x /home/$USERNAME/update_authorized_keys.sh"
+        "chown $USERNAME:$USERNAME /home/$USERNAME/update_authorized_keys.sh \
+        && chmod 0700 /home/$USERNAME/update_authorized_keys.sh \
+        && mkdir -p /home/$USERNAME/.ssh \
+        && chown $USERNAME:$USERNAME /home/$USERNAME/.ssh \
+        && chmod 0700 /home/$USERNAME/.ssh \
+        && touch /home/$USERNAME/.ssh/authorized_keys \
+        && chown $USERNAME:$USERNAME /home/$USERNAME/.ssh/authorized_keys \
+        && chmod 0600 /home/$USERNAME/.ssh/authorized_keys \
+        && true"
 
     sudo tee /mnt/ubuntu/etc/sudoers.d/allow_$USERNAME << EOF
 $USERNAME ALL = NOPASSWD: ALL
