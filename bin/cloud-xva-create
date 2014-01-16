@@ -12,7 +12,7 @@ THISDIR=$(dirname $(readlink -f $0))
 CONFIGDIR=$(cd $THISDIR && cd .. && cd config && pwd)
 LIBDIR=$(cd $THISDIR && cd .. && cd lib && pwd)
 
-sed -e "s/@XVA_NAME@/$SVA_NAME/g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
+sed -e "s/@XVA_NAME@/$XVA_NAME/g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
 
 WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-get)
 
