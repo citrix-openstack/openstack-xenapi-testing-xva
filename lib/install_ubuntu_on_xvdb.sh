@@ -3,6 +3,7 @@ set -eux
 
 HOSTNAME="$1"
 ROOT_PARTITION_SIZE_GB="$2"
+USERNAME="domzero"
 
 function main() {
     set_mirror
@@ -109,7 +110,7 @@ EOF
     sudo mkdir -p /mnt/ubuntu/root/.ssh
     sudo chmod 0700 /mnt/ubuntu/root/.ssh
     sudo tee /mnt/ubuntu/root/.ssh/authorized_keys << EOF
-# Empty now, will be populated by /root/update_authorized_keys.sh
+# Empty now, should be populated by $USERNAME
 EOF
     sudo chmod 0600 /mnt/ubuntu/root/.ssh/authorized_keys
 
@@ -137,20 +138,6 @@ respawn
 exec /sbin/getty -L hvc0 9600 linux
 EOF
 
-    sudo tee /mnt/ubuntu/root/update_authorized_keys.sh << EOF
-#!/bin/bash
-set -eux
-
-DOMID=\$(xenstore-read domid)
-xenstore-exists /local/domain/\$DOMID/authorized_keys/root
-xenstore-read /local/domain/\$DOMID/authorized_keys/root > /root/xenstore_value
-cat /root/xenstore_value > /root/.ssh/authorized_keys
-EOF
-    sudo chmod +x /mnt/ubuntu/root/update_authorized_keys.sh
-
-    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "crontab -" << EOF
-* * * * * /root/update_authorized_keys.sh
-EOF
 
     # Set hostname
     echo "$HOSTNAME" | sudo tee /mnt/ubuntu/etc/hostname
@@ -199,6 +186,44 @@ deb-src http://security.ubuntu.com/ubuntu saucy-security universe
 deb http://security.ubuntu.com/ubuntu saucy-security multiverse
 deb-src http://security.ubuntu.com/ubuntu saucy-security multiverse
 EOF
+
+    # Add a user
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "DEBIAN_FRONTEND=noninteractive \
+        adduser --disabled-password --quiet $USERNAME --gecos $USERNAME"
+
+    # Add a script to update authorized keys
+    sudo tee /mnt/ubuntu/home/$USERNAME/update_authorized_keys.sh << EOF
+#!/bin/bash
+set -eux
+
+DOMID=\$(sudo xenstore-read domid)
+sudo xenstore-exists /local/domain/\$DOMID/authorized_keys/$USERNAME
+sudo xenstore-read /local/domain/\$DOMID/authorized_keys/$USERNAME > /home/$USERNAME/xenstore_value
+cat /home/$USERNAME/xenstore_value > /home/$USERNAME/.ssh/authorized_keys
+EOF
+
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "chown $USERNAME:$USERNAME /home/$USERNAME/update_authorized_keys.sh \
+        && chmod 0700 /home/$USERNAME/update_authorized_keys.sh \
+        && mkdir -p /home/$USERNAME/.ssh \
+        && chown $USERNAME:$USERNAME /home/$USERNAME/.ssh \
+        && chmod 0700 /home/$USERNAME/.ssh \
+        && touch /home/$USERNAME/.ssh/authorized_keys \
+        && chown $USERNAME:$USERNAME /home/$USERNAME/.ssh/authorized_keys \
+        && chmod 0600 /home/$USERNAME/.ssh/authorized_keys \
+        && true"
+
+    sudo tee /mnt/ubuntu/etc/sudoers.d/allow_$USERNAME << EOF
+$USERNAME ALL = NOPASSWD: ALL
+EOF
+
+    sudo chmod 0440 /mnt/ubuntu/etc/sudoers.d/allow_$USERNAME
+
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "crontab -u $USERNAME -" << EOF
+* * * * * /home/$USERNAME/update_authorized_keys.sh
+EOF
+
 }
 
 function enable_chroot() {
