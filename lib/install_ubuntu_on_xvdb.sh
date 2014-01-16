@@ -193,7 +193,7 @@ EOF
         adduser --disabled-password --quiet $USERNAME --gecos $USERNAME"
 
     # Add a script to update authorized keys
-    sudo tee /mnt/ubuntu/$USERNAME/update_authorized_keys.sh << EOF
+    sudo tee /mnt/ubuntu/home/$USERNAME/update_authorized_keys.sh << EOF
 #!/bin/bash
 set -eux
 
