@@ -77,7 +77,7 @@ function install_base_system() {
         sudo http_proxy=http://gold.eng.hq.xensource.com:8000 debootstrap \
              --arch=amd64 \
              --components=main,universe \
-             --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget,ethtool,bsdmainutils \
+             --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget,ethtool,bsdmainutils,ca-certificates \
              saucy \
              /ubuntu_chroot \
              http://mirror.pnl.gov/ubuntu/ > /dev/null 2> /dev/null < /dev/null
