@@ -146,7 +146,7 @@ EOF
     sudo sed -i "1 s/\$/ $HOSTNAME/" /mnt/ubuntu/etc/hosts
 
     # Disable DNS with ssh
-    echo "UseDNS no" | sudo tee /mnt/ubuntu/etc/ssh/sshd_config
+    echo "UseDNS no" | sudo tee -a /mnt/ubuntu/etc/ssh/sshd_config
 
     sudo tee /mnt/ubuntu/etc/network/interfaces << EOF
 auto lo
