@@ -70,20 +70,27 @@ function install_base_system() {
     sudo apt-get install -qy debootstrap
 
     sudo mkdir -p /var/jeos
-    JEOS_CACHE="/var/jeos/cache.tgz"
-
-    if ! [ -e "$JEOS_CACHE" ]; then
-        sudo mkdir -p /ubuntu_chroot
-        sudo http_proxy=http://gold.eng.hq.xensource.com:8000 debootstrap \
-             --arch=amd64 \
+    DEBOOTSTRAP_ARGS=--arch=amd64 \
              --components=main,universe \
              --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget,ethtool,bsdmainutils,ca-certificates,python2.7 \
              saucy \
              /ubuntu_chroot \
-             http://mirror.pnl.gov/ubuntu/ > /dev/null 2> /dev/null < /dev/null
+             http://mirror.pnl.gov/ubuntu/
+
+    CACHE_MD5=`echo $DEBOOTSTRAP_ARGS | md5sum`
+    
+    JEOS_CACHE="/var/jeos/cache_$CACHE_MD5.tgz"
+
+    if ! [ -e "$JEOS_CACHE" ]; then
+        sudo mkdir -p /ubuntu_chroot
+        sudo http_proxy=http://gold.eng.hq.xensource.com:8000 debootstrap \
+             $DEBOOTSTRAP_ARGS > /dev/null 2> /dev/null < /dev/null
         echo "Saving cache..."
         sudo tar -czf "$JEOS_CACHE" -C /ubuntu_chroot ./
         sudo rm -rf /ubuntu_chroot
+    else
+        # MD5 of args has changed - delete all old caches
+        sudo rm -rf /var/jeos/cache_*.tgz
     fi
 
     sudo tar -xzf "$JEOS_CACHE" -C /mnt/ubuntu
