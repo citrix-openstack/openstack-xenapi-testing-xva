@@ -239,6 +239,9 @@ EOF
 * * * * * /home/$USERNAME/update_authorized_keys.sh
 EOF
 
+    # Ensure "python" exists and links to python2.7
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10"
+
 }
 
 function enable_chroot() {
