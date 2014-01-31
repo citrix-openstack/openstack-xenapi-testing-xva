@@ -70,12 +70,12 @@ function install_base_system() {
     sudo apt-get install -qy debootstrap
 
     sudo mkdir -p /var/jeos
-    DEBOOTSTRAP_ARGS=--arch=amd64 \
-             --components=main,universe \
-             --include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget,ethtool,bsdmainutils,ca-certificates,python2.7 \
-             saucy \
-             /ubuntu_chroot \
-             http://mirror.pnl.gov/ubuntu/
+    DEBOOTSTRAP_ARGS="--arch=amd64 "\
+             "--components=main,universe "\
+             "--include=openssh-server,language-pack-en,linux-image-virtual,grub-pc,sshpass,wget,ethtool,bsdmainutils,ca-certificates,python2.7 "\
+             "saucy "\
+             "/ubuntu_chroot "\
+             "http://mirror.pnl.gov/ubuntu/"
 
     CACHE_MD5=`echo $DEBOOTSTRAP_ARGS | md5sum`
     
