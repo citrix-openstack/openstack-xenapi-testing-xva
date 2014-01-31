@@ -187,6 +187,12 @@ deb http://security.ubuntu.com/ubuntu saucy-security multiverse
 deb-src http://security.ubuntu.com/ubuntu saucy-security multiverse
 EOF
 
+
+    # Update the apt lists
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "DEBIAN_FRONTEND=noninteractive \
+        apt-get update"
+
     # Add a user
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "DEBIAN_FRONTEND=noninteractive \
