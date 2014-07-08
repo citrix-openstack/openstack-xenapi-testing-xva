@@ -75,7 +75,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS+=" --include=openssh-server,language-pack-en"
     DEBOOTSTRAP_ARGS+=",linux-image-virtual,grub-pc,sshpass,wget,ethtool"
     DEBOOTSTRAP_ARGS+=",bsdmainutils,ca-certificates,python2.7"
-    DEBOOTSTRAP_ARGS+=" saucy"
+    DEBOOTSTRAP_ARGS+=" trusty"
     DEBOOTSTRAP_ARGS+=" /ubuntu_chroot"
     DEBOOTSTRAP_ARGS+=" http://mirror.pnl.gov/ubuntu/"
 
@@ -165,35 +165,35 @@ iface eth0 inet dhcp
 EOF
 
     sudo tee /mnt/ubuntu/etc/apt/sources.list << EOF
-deb http://mirror.rackspace.com/ubuntu/ saucy main restricted
-deb-src http://mirror.rackspace.com/ubuntu/ saucy main restricted
+deb http://mirror.rackspace.com/ubuntu/ trusty main restricted
+deb-src http://mirror.rackspace.com/ubuntu/ trusty main restricted
 
-deb http://mirror.rackspace.com/ubuntu/ saucy-updates main restricted
-deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates main restricted
+deb http://mirror.rackspace.com/ubuntu/ trusty-updates main restricted
+deb-src http://mirror.rackspace.com/ubuntu/ trusty-updates main restricted
 
-deb http://mirror.rackspace.com/ubuntu/ saucy universe
-deb-src http://mirror.rackspace.com/ubuntu/ saucy universe
+deb http://mirror.rackspace.com/ubuntu/ trusty universe
+deb-src http://mirror.rackspace.com/ubuntu/ trusty universe
 
-deb http://mirror.rackspace.com/ubuntu/ saucy-updates universe
-deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates universe
+deb http://mirror.rackspace.com/ubuntu/ trusty-updates universe
+deb-src http://mirror.rackspace.com/ubuntu/ trusty-updates universe
 
-deb http://mirror.rackspace.com/ubuntu/ saucy multiverse
-deb-src http://mirror.rackspace.com/ubuntu/ saucy multiverse
+deb http://mirror.rackspace.com/ubuntu/ trusty multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ trusty multiverse
 
-deb http://mirror.rackspace.com/ubuntu/ saucy-updates multiverse
-deb-src http://mirror.rackspace.com/ubuntu/ saucy-updates multiverse
+deb http://mirror.rackspace.com/ubuntu/ trusty-updates multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ trusty-updates multiverse
 
-deb http://mirror.rackspace.com/ubuntu/ saucy-backports main restricted universe multiverse
-deb-src http://mirror.rackspace.com/ubuntu/ saucy-backports main restricted universe multiverse
+deb http://mirror.rackspace.com/ubuntu/ trusty-backports main restricted universe multiverse
+deb-src http://mirror.rackspace.com/ubuntu/ trusty-backports main restricted universe multiverse
 
-deb http://security.ubuntu.com/ubuntu saucy-security main restricted
-deb-src http://security.ubuntu.com/ubuntu saucy-security main restricted
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted
+deb-src http://security.ubuntu.com/ubuntu trusty-security main restricted
 
-deb http://security.ubuntu.com/ubuntu saucy-security universe
-deb-src http://security.ubuntu.com/ubuntu saucy-security universe
+deb http://security.ubuntu.com/ubuntu trusty-security universe
+deb-src http://security.ubuntu.com/ubuntu trusty-security universe
 
-deb http://security.ubuntu.com/ubuntu saucy-security multiverse
-deb-src http://security.ubuntu.com/ubuntu saucy-security multiverse
+deb http://security.ubuntu.com/ubuntu trusty-security multiverse
+deb-src http://security.ubuntu.com/ubuntu trusty-security multiverse
 EOF
 
 
