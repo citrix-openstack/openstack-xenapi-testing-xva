@@ -15,7 +15,7 @@ function main() {
 }
 
 function set_mirror() {
-    sudo sed -ie "s,mirror.anl.gov/pub/ubuntu,mirror.pnl.gov/ubuntu,g" /etc/apt/sources.list
+    sudo sed -ie "s,mirror.anl.gov/pub/ubuntu,mirror.anl.gov/ubuntu,g" /etc/apt/sources.list
 }
 
 function prepare_disk() {
@@ -77,7 +77,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS+=",bsdmainutils,ca-certificates,python2.7"
     DEBOOTSTRAP_ARGS+=" trusty"
     DEBOOTSTRAP_ARGS+=" /ubuntu_chroot"
-    DEBOOTSTRAP_ARGS+=" http://mirror.pnl.gov/ubuntu/"
+    DEBOOTSTRAP_ARGS+=" http://mirror.anl.gov/ubuntu/"
 
     CACHE_MD5=`echo $DEBOOTSTRAP_ARGS | md5sum | cut -f 1 -d ' '`
     
@@ -86,7 +86,7 @@ function install_base_system() {
     if ! [ -e "$JEOS_CACHE" ]; then
         sudo mkdir -p /ubuntu_chroot
         sudo http_proxy=http://gold.eng.hq.xensource.com:8000 debootstrap \
-             $DEBOOTSTRAP_ARGS > /dev/null 2> /dev/null < /dev/null
+             $DEBOOTSTRAP_ARGS < /dev/null
         echo "Saving cache..."
         sudo tar -czf "$JEOS_CACHE" -C /ubuntu_chroot ./
         sudo rm -rf /ubuntu_chroot
