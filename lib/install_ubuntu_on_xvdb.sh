@@ -73,7 +73,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS="--arch=amd64"
     DEBOOTSTRAP_ARGS+=" --components=main,universe"
     DEBOOTSTRAP_ARGS+=" --include=openssh-server,language-pack-en"
-    DEBOOTSTRAP_ARGS+=",linux-image-virtual,grub-pc,sshpass,wget,ethtool"
+    DEBOOTSTRAP_ARGS+=",linux-image-virtual,grub,sshpass,wget,ethtool"
     DEBOOTSTRAP_ARGS+=",bsdmainutils,ca-certificates,python2.7"
     DEBOOTSTRAP_ARGS+=" trusty"
     DEBOOTSTRAP_ARGS+=" /ubuntu_chroot"
@@ -107,11 +107,13 @@ UUID=$(sudo blkid -s UUID /dev/xvdb1 -o value) /    ext3 errors=remount-ro 0 1
 UUID=$(sudo blkid -s UUID /dev/xvdb2 -o value) none swap sw                0 0
 EOF
 
+    sudo LANG=C chroot /mnt/ubuntu cp /proc/mounts /etc/mtab
+
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "grub-install /dev/xvdb"
 
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
-        "update-grub"
+        "update-grub -y"
 
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "apt-get clean"
@@ -262,6 +264,8 @@ EOF
 function disable_chroot() {
     sudo rm /mnt/ubuntu/etc/mtab
     sudo rm /mnt/ubuntu/usr/sbin/policy-rc.d
+
+    sudo LANG=C chroot stop udevd || true
 
     sudo umount /mnt/ubuntu/sys
     sudo umount /mnt/ubuntu/proc/xen || true
