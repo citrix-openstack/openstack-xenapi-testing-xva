@@ -94,7 +94,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS+=" http://mirror.anl.gov/ubuntu/"
 
     CACHE_MD5=`echo $DEBOOTSTRAP_ARGS | md5sum | cut -f 1 -d ' '`
-    
+
     JEOS_CACHE="/var/jeos/cache_$CACHE_MD5.tgz"
 
     if ! [ -e "$JEOS_CACHE" ]; then
