@@ -121,6 +121,8 @@ UUID=$(sudo blkid -s UUID /dev/xvdb1 -o value) /    ext3 errors=remount-ro 0 1
 UUID=$(sudo blkid -s UUID /dev/xvdb2 -o value) none swap sw                0 0
 EOF
 
+    sudo LANG=C chroot /mnt/ubuntu cp /proc/mounts /etc/mtab
+
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "grub-install /dev/xvdb"
 
