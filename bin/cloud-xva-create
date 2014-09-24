@@ -16,9 +16,11 @@ sed -e "s/@XVANAME@/$XVA_NAME/g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
 
 WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-get)
 
-if [ -z "$WORKER_IP" ]; then
-    WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
+if [ -n "$WORKER_IP" ]; then
+    WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete
 fi
+
+WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
 
 echo "Worker: $WORKER_IP"
 HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
