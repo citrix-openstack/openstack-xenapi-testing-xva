@@ -89,6 +89,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS+=" --include=openssh-server,language-pack-en"
     DEBOOTSTRAP_ARGS+=",linux-image-virtual,grub,sshpass,wget,ethtool"
     DEBOOTSTRAP_ARGS+=",bsdmainutils,ca-certificates,python2.7"
+    DEBOOTSTRAP_ARGS+=",strace,gdb"
     DEBOOTSTRAP_ARGS+=" trusty"
     DEBOOTSTRAP_ARGS+=" /ubuntu_chroot"
     DEBOOTSTRAP_ARGS+=" http://mirror.anl.gov/ubuntu/"
