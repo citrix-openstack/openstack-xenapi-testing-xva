@@ -6,12 +6,28 @@ ROOT_PARTITION_SIZE_GB="$2"
 USERNAME="domzero"
 
 function main() {
+    update_debootstrap
     set_mirror
     prepare_disk
     install_base_system
     enable_chroot
     customize_system
     disable_chroot
+}
+
+function update_debootstrap() {
+    local tmpdir
+    local debootstrap_deb
+
+    tmpdir=$(mktemp -d)
+
+    debootstrap_deb="$tmpdir/debootstrap.deb"
+
+    wget -qO "$debootstrap_deb" "http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.61_all.deb"
+
+    sudo dpkg -i "$debootstrap_deb"
+
+    rm -rf "$tmpdir"
 }
 
 function set_mirror() {
