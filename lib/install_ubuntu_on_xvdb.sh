@@ -83,8 +83,6 @@ function install_base_system() {
     sudo mkdir -p /mnt/ubuntu
     sudo mount /dev/xvdb1 /mnt/ubuntu
 
-    sudo apt-get install -qy debootstrap
-
     sudo mkdir -p /var/jeos
     DEBOOTSTRAP_ARGS="--arch=amd64"
     DEBOOTSTRAP_ARGS+=" --components=main,universe"
