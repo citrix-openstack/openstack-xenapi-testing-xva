@@ -273,11 +273,19 @@ function enable_chroot() {
     sudo mount none /mnt/ubuntu/proc -t proc
     sudo mount none /mnt/ubuntu/sys -t sysfs
 
+    sudo tee /mnt/ubuntu/usr/sbin/policy-rc.d << EOF
+exit 101
+EOF
+    sudo chmod +x /mnt/ubuntu/usr/sbin/policy-rc.d
+
     sudo cp /etc/mtab /mnt/ubuntu/etc/mtab
 }
 
 function disable_chroot() {
     sudo rm /mnt/ubuntu/etc/mtab
+    sudo rm /mnt/ubuntu/usr/sbin/policy-rc.d
+
+    sudo LANG=C chroot stop udevd || true
 
     sudo umount /mnt/ubuntu/sys
     sudo umount /mnt/ubuntu/proc/xen || true
