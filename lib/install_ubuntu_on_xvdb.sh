@@ -130,8 +130,6 @@ EOF
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "update-grub -y"
 
-    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
-        "apt-get clean"
 
     sudo mkdir -p /mnt/ubuntu/root/.ssh
     sudo chmod 0700 /mnt/ubuntu/root/.ssh
@@ -264,6 +262,8 @@ EOF
     # Ensure "python" exists and links to python2.7
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c "update-alternatives --install /usr/bin/python python /usr/bin/python2.7 10"
 
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "apt-get clean"
 }
 
 function enable_chroot() {
