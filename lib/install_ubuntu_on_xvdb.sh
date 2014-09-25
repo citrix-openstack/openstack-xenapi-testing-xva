@@ -285,8 +285,6 @@ function disable_chroot() {
     sudo rm /mnt/ubuntu/etc/mtab
     sudo rm /mnt/ubuntu/usr/sbin/policy-rc.d
 
-    sudo LANG=C chroot stop udevd || true
-
     sudo umount /mnt/ubuntu/sys
     sudo umount /mnt/ubuntu/proc/xen || true
     sudo umount /mnt/ubuntu/proc
