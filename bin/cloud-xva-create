@@ -34,7 +34,11 @@ WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-detach-second-hdd
 
 NEW_VM=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-vm-from-hdd $HDD $RAM_GB $HOSTNAME)
 
-WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
+if [ "$UPLOAD_IMAGE" = "NO" ]; then
+    echo "Skipping upload"
+else
+    WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
+fi
 
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
 
