@@ -39,7 +39,13 @@ function prepare_disk() {
     export DEBIAN_FRONTEND=noninteractive
 
     sudo apt-get update
-    #sudo apt-get -qy upgrade
+    set +e
+    sudo apt-get -qy dist-upgrade
+    if [ $? -ne 0 ]; then
+	set -e
+	sudo apt-get -qy dist-upgrade
+    fi
+    set -e
 
     # Partition xvdb
     sudo fdisk /dev/xvdb << EOF
