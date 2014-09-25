@@ -39,13 +39,7 @@ function prepare_disk() {
     export DEBIAN_FRONTEND=noninteractive
 
     sudo apt-get update
-    set +e
-    sudo apt-get -qy dist-upgrade
-    if [ $? -ne 0 ]; then
-	set -e
-	sudo apt-get -qy dist-upgrade
-    fi
-    set -e
+    #sudo apt-get -qy upgrade
 
     # Partition xvdb
     sudo fdisk /dev/xvdb << EOF
@@ -224,6 +218,11 @@ EOF
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
         "DEBIAN_FRONTEND=noninteractive \
         apt-get update"
+
+    # Upgrade kernel etc
+    sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
+        "DEBIAN_FRONTEND=noninteractive \
+        apt-get -qy dist-upgrade"
 
     # Add a user
     sudo LANG=C chroot /mnt/ubuntu /bin/bash -c \
