@@ -1,4 +1,4 @@
 WORKER_VM_NAME="ignored"
 WORKER_VM_NETWORKING="0=xenbr0"
-WORKER_VM_XVA="ssh:$PublicHttpServerUserAndHost:$PublicHttpServerOpenStackPath/xenapi-in-the-cloud-appliances/@XVANAME@.xva"
+WORKER_VM_XVA="ssh:@USERANDHOST@:@TARGET_PATH@/@XVANAME@.xva"
 WORKER_VM_XENSERVER="happywerld3.eng.hq.xensource.com"
