@@ -25,9 +25,9 @@ rm -rf result
 mkdir result
 TARGET_PATH=$(readlink -f result)
 
-sed -e "s/@XVANAME@/$XVA_NAME/g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
-sed -e "s/@USERANDHOST@/$USER@$WORKER_IP/g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
-sed -e "s,@TARGET_PATH@,$TARGET_PATH,g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
+sed -e "s/@XVANAME@/$XVA_NAME/g" \
+    -e "s/@USERANDHOST@/$USER@$WORKER_IP/g" \
+    -e "s,@TARGET_PATH@,$TARGET_PATH,g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
 
 echo "Worker: $WORKER_IP"
 HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
