@@ -24,7 +24,7 @@ WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
 TARGET_PATH=$(echo "pwd" | remote-bash "ubuntu@$WORKER_IP")
 
 sed -e "s/@XVANAME@/$XVA_NAME/g" \
-    -e "s/@USERANDHOST@/$USER@$WORKER_IP/g" \
+    -e "s/@USERANDHOST@/ubuntu@$WORKER_IP/g" \
     -e "s,@TARGET_PATH@,$TARGET_PATH,g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
 
 echo "Worker: $WORKER_IP"
