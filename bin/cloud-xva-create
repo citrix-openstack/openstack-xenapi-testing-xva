@@ -21,9 +21,7 @@ fi
 
 WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
 
-rm -rf result
-mkdir result
-TARGET_PATH=$(readlink -f result)
+TARGET_PATH=$(echo "pwd" | remote-bash "ubuntu@$WORKER_IP")
 
 sed -e "s/@XVANAME@/$XVA_NAME/g" \
     -e "s/@USERANDHOST@/$USER@$WORKER_IP/g" \
@@ -45,6 +43,7 @@ if [ "$UPLOAD_IMAGE" = "NO" ]; then
     echo "Skipping upload"
 else
     WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
+    echo "ls -la" | remote-bash "ubuntu@$WORKER_IP"
 fi
 
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
