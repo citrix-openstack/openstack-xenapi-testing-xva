@@ -23,7 +23,7 @@ function update_debootstrap() {
 
     debootstrap_deb="$tmpdir/debootstrap.deb"
 
-    wget -qO "$debootstrap_deb" "http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.61_all.deb"
+    wget -qO "$debootstrap_deb" "http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.66_all.deb"
 
     sudo dpkg -i "$debootstrap_deb"
 
