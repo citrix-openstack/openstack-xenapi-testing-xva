@@ -48,5 +48,3 @@ else
 fi
 
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
-
-WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-delete
