@@ -31,7 +31,7 @@ function update_debootstrap() {
 }
 
 function set_mirror() {
-    sudo sed -ie "s,mirror.anl.gov/pub/ubuntu,mirror.cc.columbia.edu/pub/linux/ubuntu/archive,g" /etc/apt/sources.list
+    sudo sed -ie "s,mirror.anl.gov/pub/ubuntu,us.archive.ubuntu.com/ubuntu,g" /etc/apt/sources.list
 }
 
 function prepare_disk() {
@@ -92,7 +92,7 @@ function install_base_system() {
     DEBOOTSTRAP_ARGS+=",strace,gdb"
     DEBOOTSTRAP_ARGS+=" trusty"
     DEBOOTSTRAP_ARGS+=" /ubuntu_chroot"
-    DEBOOTSTRAP_ARGS+=" http://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/"
+    DEBOOTSTRAP_ARGS+=" http://us.archive.ubuntu.com/ubuntu/"
 
     CACHE_MD5=`echo $DEBOOTSTRAP_ARGS | md5sum | cut -f 1 -d ' '`
 
