@@ -21,17 +21,18 @@ fi
 
 WORKER_IP=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-create)
 
-TARGET_PATH=$(echo "pwd" | remote-bash "ubuntu@$WORKER_IP")
+sshpass -p "citrix" ssh-copy-id root@$WORKER_IP
+TARGET_PATH=$(echo "pwd" | remote-bash "root@$WORKER_IP")
 
 sed -e "s/@XVANAME@/$XVA_NAME/g" \
-    -e "s/@USERANDHOST@/ubuntu@$WORKER_IP/g" \
+    -e "s/@USERANDHOST@/root@$WORKER_IP/g" \
     -e "s,@TARGET_PATH@,$TARGET_PATH,g" "$CONFIGDIR/target.in" > "$CONFIGDIR/target"
 
 echo "Worker: $WORKER_IP"
 HDD=$(WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-new-second-hdd $PRIMARY_DISK_SIZE)
 
 cat $LIBDIR/install_ubuntu_on_xvdb.sh |
-    remote-bash "ubuntu@$WORKER_IP" \
+    remote-bash "root@$WORKER_IP" \
     "$HOSTNAME" \
     "$ROOT_PARTITION_SIZE_GB"
 
@@ -43,8 +44,8 @@ if [ "$UPLOAD_IMAGE" = "NO" ]; then
     echo "Skipping upload"
 else
     WORKER_VM_CONFIG="$CONFIGDIR/target" worker-vm-update-image $NEW_VM
-    echo "ls -la" | remote-bash "ubuntu@$WORKER_IP"
-    cat $LIBDIR/upload_to_rax.sh | remote-bash "ubuntu@$WORKER_IP"
+    echo "ls -la" | remote-bash "root@$WORKER_IP"
+    cat $LIBDIR/upload_to_rax.sh | remote-bash "root@$WORKER_IP"
 fi
 
 WORKER_VM_CONFIG="$CONFIGDIR/builder" worker-vm-delete-vm $NEW_VM
